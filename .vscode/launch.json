@@ -1,0 +1,25 @@
+{
+	"configurations": [
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "afin-decrypt",
+			"program": "${workspaceFolder}/afin/afin.py",
+			"args": ["-D", "-m=26", "-a=11", "-b=4", "-i=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "afin-encrypt",
+			"program": "${workspaceFolder}/afin/afin.py",
+			"args": ["-C", "-m=26", "-a=11", "-b=4", "-i=plain.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "hill-encrypt",
+			"program": "${workspaceFolder}/hill/hill.py",
+			"args": ["-C", "-m=26", "-n=3", "-k=keys.txt", "-i=plain.txt"]
+		}
+	]
+}
