@@ -65,7 +65,7 @@ def afin():
     a = gmp.mpz(int(args.a))
     b = gmp.mpz(int(args.b))
     m = gmp.mpz(int(args.m))
-    outputFile = open(args.o) if args.o else sys.stdout
+    outputFile = open(args.o, 'w') if args.o else sys.stdout
 
     if mcd(a, m) != 1:
         raise error(f"y = ({a}x + {b}) % {m} does not define an inyective function")

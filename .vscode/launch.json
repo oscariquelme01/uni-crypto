@@ -27,6 +27,20 @@
 			"name": "hill-decrypt",
 			"program": "${workspaceFolder}/hill/hill.py",
 			"args": ["-D", "-m=26", "-n=3", "-k=keys.txt", "-i=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "vigenere-encrypt",
+			"program": "${workspaceFolder}/vigenere/vigenere.py",
+			"args": ["-C", "-k=MYKEY", "-i=plain.txt", "-o=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "vigenere-decrypt",
+			"program": "${workspaceFolder}/vigenere/vigenere.py",
+			"args": ["-D", "-k=MYKEY", "-i=cyphered.txt"]
 		}
 	]
 }

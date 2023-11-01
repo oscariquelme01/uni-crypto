@@ -25,55 +25,50 @@ def vigenere():
 
     args = parser.parse_args()
 
+    outputFile = open(args.o, 'w') if args.o else sys.stdout
+
     if not args.C and not args.D:
         parser.error("You must specify either -D or -C")
 
     k = str(args.k)
-    fileo = args.o
     m = 26
 
     userInput = readInput(args)
-    open(fileo, "w")
     if args.C == True:
         print("Cifrando")
-        cifrar(userInput, k, m, fileo)
+        encrypt(userInput, k, m, outputFile)
 
     elif args.D == True:
         print("Descifrando")
-        descifrar(userInput, k, m, fileo)
+        decrypt(userInput, k, m, outputFile)
 
     return 0
 
 
-def cifrar(filei, k, m, fileo):
-    for i in range(len(filei)):
-        if filei[i] == " ":
-            y = filei[i]
-            with open(fileo, "a") as f:
-                f.write(y)
+def encrypt(inputFile, k, m, outputFile):
+    asciiPadding = ord("A")
 
-        else:
-            y = ((ord(filei[i]) - 65) + (ord(k[i % len(k)]) - 65)) % m
-            y += 65
-            with open(fileo, "a") as f:
-                f.write(chr(y))
+    for i in range(len(inputFile)):
+        symbolValue = ord(inputFile[i]) - asciiPadding
+        keyValue = ord(k[i % len(k)]) - asciiPadding
 
-    return 0
+        y = (symbolValue + keyValue) % m
+        y += asciiPadding
+
+        outputFile.write(chr(y))
 
 
-def descifrar(filei, k, m, fileo):
-    for i in range(len(filei)):
-        if filei[i] == " ":
-            y = filei[i]
-            with open(fileo, "a") as f:
-                f.write(y)
+def decrypt(inputFile, k, m, outputFile):
+    asciiPadding = ord("A")
 
-        else:
-            y = ((ord(filei[i]) - 65) - (ord(k[i % len(k)]) - 65)) % m
-            y += 65
-            with open(fileo, "a") as f:
-                f.write(chr(y))
-    return 0
+    for i in range(len(inputFile)):
+        symbolValue = ord(inputFile[i]) - asciiPadding
+        keyValue = ord(k[i % len(k)]) - asciiPadding
+
+        y = (symbolValue - keyValue) % m
+        y += asciiPadding
+
+        outputFile.write(chr(y))
 
 
 if __name__ == "__main__":
