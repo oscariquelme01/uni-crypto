@@ -19,7 +19,14 @@
 			"request": "launch",
 			"name": "hill-encrypt",
 			"program": "${workspaceFolder}/hill/hill.py",
-			"args": ["-C", "-m=26", "-n=3", "-k=keys.txt", "-i=plain.txt"]
+			"args": ["-C", "-m=26", "-n=3", "-k=keys.txt", "-i=plain.txt", "-o=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "hill-decrypt",
+			"program": "${workspaceFolder}/hill/hill.py",
+			"args": ["-D", "-m=26", "-n=3", "-k=keys.txt", "-i=cyphered.txt"]
 		}
 	]
 }
