@@ -30,7 +30,7 @@ def vigenere():
 
     k = str(args.k)
     fileo = args.o
-    m = 25
+    m = 26
 
     userInput = readInput(args)
     open(fileo, "w")
