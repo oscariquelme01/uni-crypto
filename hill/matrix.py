@@ -67,9 +67,9 @@ def adjugate(matrix):
 
 def inverse(matrix, m):
     # Find x in module m so that it satisfies that x * det(k) == 1 mod(m).
-    # X will be equal to 1/det(k) in mod(m). We do this using the extended euclidean algorithm
+    # X will be equal to 1/det(k) in mod(m)
     matrixDeterminant = determinant(matrix) % m
-    # inversedDeterminant, _, _ = extendedEuclides(matrixDeterminat, m)
+
     inversedDeterminant = -1
     for i in range(m):
         x = i * matrixDeterminant
@@ -78,7 +78,6 @@ def inverse(matrix, m):
             break
 
     adjugateMatrix = adjugate(matrix)
-    # adjugateMatrix.put(18, 19)
     return (inversedDeterminant * adjugateMatrix) % m
 
 
