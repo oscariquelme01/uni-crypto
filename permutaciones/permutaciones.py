@@ -90,13 +90,16 @@ def encrypt(userInput, outputFile, k1, k2):
                 rowIndex = int(k1[k]) - 1
                 cypheredChunk += matrix[colIndex][rowIndex]
 
-        outputFile.write(cypheredChunk)
+        outputFile.write(cypheredChunk.strip('@'))
 
 def decrypt(userInput, outputFile, k1, k2):
     # split the array into n chunks
     m = len(k1)
     n = len(k2)
     matrixDimensions = m * n
+
+    while len(userInput) % matrixDimensions:
+        userInput += '@'
 
     for i in range(0, len(userInput), matrixDimensions):
         matrix = [[0 for x in range(m)] for y in range(n)] 
