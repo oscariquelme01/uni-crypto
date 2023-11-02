@@ -41,6 +41,20 @@
 			"name": "vigenere-decrypt",
 			"program": "${workspaceFolder}/vigenere/vigenere.py",
 			"args": ["-D", "-k=MYKEY", "-i=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "permutaciones-encrypt",
+			"program": "${workspaceFolder}/permutaciones/permutaciones.py",
+			"args": ["-C", "-k1=231", "-k2=21", "-i=plain.txt", "-o=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "permutaciones-decrypt",
+			"program": "${workspaceFolder}/permutaciones/permutaciones.py",
+			"args": ["-D", "-k1=231", "-k2=21", "-i=cyphered.txt"]
 		}
 	]
 }
