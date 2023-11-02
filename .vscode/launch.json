@@ -55,6 +55,20 @@
 			"name": "permutaciones-decrypt",
 			"program": "${workspaceFolder}/permutaciones/permutaciones.py",
 			"args": ["-D", "-k1=231", "-k2=21", "-i=cyphered.txt"]
+		},	
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "transposiciones-encrypt",
+			"program": "${workspaceFolder}/transposicion/transposicion.py",
+			"args": ["-C", "-p=2 1 0", "-i=plain.txt", "-o=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "transposiciones-decrypt",
+			"program": "${workspaceFolder}/transposicion/transposicion.py",
+			"args": ["-D", "-p=2 1 0", "-i=cyphered.txt"]
 		}
 	]
 }
