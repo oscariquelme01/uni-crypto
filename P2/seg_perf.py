@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 from random import randint
+import numpy
+import string
 
 alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 
@@ -23,6 +25,7 @@ def normalize(s):
         ("í", "i"),
         ("ó", "o"),
         ("ú", "u"),
+        ("ñ", "n"),
     )
     for a, b in replacements:
         s = s.replace(a, b).replace(a.upper(), b.upper())
@@ -52,39 +55,50 @@ def segPerf():
         parser.error("You must put only one -P or -I")
 
     # Inicializar un diccionario para contar las frecuencias de cada letra
-    frequenciestext = {}
-    frequenciescyphered= {}
+    frequenciestext = {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J': 0, 'K': 0, 'L': 0, 'M': 0,
+         'N': 0, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0}
+    frequenciescyphered= {'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J': 0, 'K': 0, 'L': 0, 'M': 0,
+         'N': 0, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0}
+    cypheredtxt = ""
+    p_xy = numpy.zeros(shape=(m,m))
+    p_xy_frequencies = numpy.zeros(shape=(m,m))
+    p_xy_final = numpy.zeros(shape=(m,m))
+    textlenght = len(inputFile)
 
     for i in inputFile:
-        if i in frequenciestext:
-            frequenciestext[i] += 1
-        else:
-            frequenciestext[i] = 1   
-
+        frequenciestext[i] += 1
+ 
     for key, value in frequenciestext.items():
-        frequenciestext[key] = value / len(inputFile)
+        frequenciestext[key] = value / textlenght
 
-    print(frequenciestext) 
-
-    for i in range(len(inputFile)):
+    for i in range(textlenght):
         k = alphabet[randint(0,m-1)]
         if args.I:		
-            if k==ord("O") or k==ord("C") or k==ord("B  "):
+            if k==ord("O") or k==ord("C") or k==ord("B"):
                 k=ord("X")
-			
 		
-        outputFile.write(chr((((ord(inputFile[i])-65)+(ord(k)-65))% m)+ 65))
-    with open(args.i, encoding='UTF-8') as f:
-        cyphertext = f.read(outputFile)
+        cypheredtxt += chr((((ord(inputFile[i])-65)+(ord(k)-65))% m)+ 65)
 
-    for i in outputFile:
-        if i in frequenciescyphered:
-            frequenciescyphered[i] += 1
-        else:
-            frequenciescyphered[i] = 1   
+    outputFile.write(cypheredtxt)
+
+    for i in cypheredtxt:
+        frequenciescyphered[i] += 1
+  
     for key, value in frequenciescyphered.items():
-        frequenciescyphered[key] = value / len(outputFile)
+        frequenciescyphered[key] = value / textlenght
 
+    for i in range(textlenght):
+        p_xy[(ord(inputFile[i])-65)% m][(ord(cypheredtxt[i])-65)% m]+=1
+
+    for i in range(m):
+        for j in range(m):
+            p_xy_frequencies[i][j] = p_xy[i][j] / textlenght   
+
+    for i,char in enumerate(string.ascii_uppercase):
+       for j,char2 in enumerate(string.ascii_uppercase): 
+            p_xy_final[i][j] = p_xy_frequencies[i][j] * frequenciestext[char] / frequenciescyphered[char2] 
+
+    
 
 if __name__ == "__main__":
     sys.exit(segPerf())
