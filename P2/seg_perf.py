@@ -26,6 +26,7 @@ def normalize(s):
         ("ó", "o"),
         ("ú", "u"),
         ("ñ", "n"),
+        ("ü", "u"),
     )
     for a, b in replacements:
         s = s.replace(a, b).replace(a.upper(), b.upper())
@@ -46,7 +47,8 @@ def segPerf():
     m = 26
 
     inputFile = normalize(inputFile.upper().replace(" ", "").replace(
-        ".", "").replace(",", "").replace(";", "").replace(":", ""))
+        ".", "").replace(",", "").replace(";", "").replace(":", "").replace("\n","").replace("-","").replace("¿","")
+        .replace("'","").replace("?","").replace("¡","").replace("!","").replace("«","").replace("»","").replace("(",""))
 
     if not args.P and not args.I:
         parser.error("You must specify either -P or -I")
@@ -63,10 +65,15 @@ def segPerf():
     p_xy = numpy.zeros(shape=(m,m))
     p_xy_frequencies = numpy.zeros(shape=(m,m))
     p_xy_final = numpy.zeros(shape=(m,m))
-    textlenght = len(inputFile)
+    counter = 0
 
     for i in inputFile:
+        if i not in string.ascii_uppercase:
+            continue
         frequenciestext[i] += 1
+        counter += 1
+    
+    textlenght = counter
  
     for key, value in frequenciestext.items():
         frequenciestext[key] = value / textlenght
@@ -98,7 +105,8 @@ def segPerf():
        for j,char2 in enumerate(string.ascii_uppercase): 
             p_xy_final[i][j] = p_xy_frequencies[i][j] * frequenciestext[char] / frequenciescyphered[char2] 
 
-    
+    print(p_xy_final)
+    print(len(inputFile))
 
 if __name__ == "__main__":
     sys.exit(segPerf())
