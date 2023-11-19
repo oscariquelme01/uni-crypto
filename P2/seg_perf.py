@@ -105,8 +105,18 @@ def segPerf():
        for j,char2 in enumerate(string.ascii_uppercase): 
             p_xy_final[i][j] = p_xy_frequencies[i][j] * frequenciestext[char] / frequenciescyphered[char2] 
 
-    print(p_xy_final)
-    print(len(inputFile))
+    
+    for i in range(m):
+        aux = 0.0
+        for j in range(m):
+            aux += p_xy_final[i][j]
+            print("P("+chr(i+65)+"|"+chr(j+65)+") = "+str(p_xy_final[i][j]))
+        media = aux/m
+        print("\n")
+        print("media = "+str(media))
+        print("P("+chr(i+65)+") = "+str(frequenciestext[chr(i+65)]))
+        print("-----------------------------------------------------")
+
 
 if __name__ == "__main__":
     sys.exit(segPerf())
