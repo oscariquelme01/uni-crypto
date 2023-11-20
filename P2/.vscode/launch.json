@@ -1,0 +1,15 @@
+{
+  "configurations": [
+    {
+      "type": "python",
+      "request": "launch",
+      "name": "segperf-equiprobable",
+      "program": "${workspaceFolder}/seg_perf/seg_perf.py",
+      "args": [
+        "-P",
+        "-i=miniText.txt",
+		"-o=cyphered.txt"
+      ]
+    }
+  ]
+}
