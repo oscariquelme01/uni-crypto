@@ -170,11 +170,9 @@ def segPerf():
     }
     cypheredOutput = ""
 
-    # Inicializamos 3 matrices cuadradas de ceros con tamaño igual al tamaño del alfabeto
-    p_yx = numpy.zeros(shape=(m, m))
-    p_xy_frequencies = numpy.zeros(shape=(m, m))
-    p_xy_final = numpy.zeros(shape=(m, m))
+    frequenciesPlainKnowingCyphered = numpy.zeros(shape=(m, m))
 
+    # Get absolute frequencies of plain text
     for i in inputFile:
         if i not in string.ascii_uppercase:
             continue
@@ -182,9 +180,11 @@ def segPerf():
 
     textLenght = len(inputFile)
 
+    # Normalize frequencies
     for key, value in frequenciesText.items():
         frequenciesText[key] = value / textLenght
 
+    # Cypher input and write it to file
     for i in range(textLenght):
         k = alphabet[randint(0, m - 1)]
         if args.I:
@@ -196,44 +196,34 @@ def segPerf():
 
     outputFile.write(cypheredOutput)
 
+    # Get absolute frequencies of cyphered text
     for i in cypheredOutput:
         frequenciesCyphered[i] += 1
 
+    # Normalize frequencies
     for key, value in frequenciesCyphered.items():
         frequenciesCyphered[key] = value / textLenght
 
+    # Get conditional probabilities
     for i in range(textLenght):
         if inputFile[i] in alphabet:
-            p_yx[(ord(cypheredOutput[i]) - 65)][(ord(inputFile[i]) - 65)] += 1
+            frequenciesPlainKnowingCyphered[(ord(inputFile[i]) - 65)][(ord(cypheredOutput[i]) - 65)] += 1
 
-    ###############################
-    ## HASTA AQUI ESTA BIEN 100% ##
-    ###############################
+    # output results
+    for key, value in frequenciesText.items():
+        print('P(' + key + ') = ' + str(value))
 
-    # p_yx = p_yx / textLenght
-    for i in range(m):
-        for j in range(m):
-            p_xy_frequencies[i][j] = p_yx[i][j] / textLenght
-
-    for i, char in enumerate(alphabet):
-        for j, char2 in enumerate(alphabet):
-            p_xy_final[i][j] = (
-                p_xy_frequencies[j][i] * frequenciesText[char] / frequenciesCyphered[char2]
-            )
-
-    for i in range(m):
-        aux = 0.0
-        for j in range(m):
-            aux += p_xy_final[i][j]
-            print(
-                "P(" + chr(i + 65) + "|" + chr(j + 65) + ") = " + str(p_xy_final[i][j])
-            )
-        media = aux / m
-        print("\n")
-        print("media = " + str(media))
-        print("P(" + chr(i + 65) + ") = " + str(frequenciesText[chr(i + 65)]))
-        print("-----------------------------------------------------")
+    print('\n')
+    for i in range(len(alphabet)):
+        x = alphabet[i]
+        total = 0
+        for j in range(len(alphabet)):
+            y = alphabet[j]
+            relativeFrequency = frequenciesPlainKnowingCyphered[i][j] / textLenght
+            print('P(' + x + '|' + y + ') = ' + str(relativeFrequency))
+            total += relativeFrequency
 
 
+        print(f'Total = {total}\n')
 if __name__ == "__main__":
     sys.exit(segPerf())

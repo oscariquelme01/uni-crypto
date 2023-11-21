@@ -1,0 +1,74 @@
+{
+	"configurations": [
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "afin-decrypt",
+			"program": "${workspaceFolder}/afin/afin.py",
+			"args": ["-D", "-m=26", "-a=11", "-b=4", "-i=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "afin-encrypt",
+			"program": "${workspaceFolder}/afin/afin.py",
+			"args": ["-C", "-m=26", "-a=11", "-b=4", "-i=plain.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "hill-encrypt",
+			"program": "${workspaceFolder}/hill/hill.py",
+			"args": ["-C", "-m=26", "-n=3", "-k=keys.txt", "-i=plain.txt", "-o=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "hill-decrypt",
+			"program": "${workspaceFolder}/hill/hill.py",
+			"args": ["-D", "-m=26", "-n=3", "-k=keys.txt", "-i=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "vigenere-encrypt",
+			"program": "${workspaceFolder}/vigenere/vigenere.py",
+			"args": ["-C", "-k=MYKEY", "-i=plain.txt", "-o=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "vigenere-decrypt",
+			"program": "${workspaceFolder}/vigenere/vigenere.py",
+			"args": ["-D", "-k=MYKEY", "-i=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "permutaciones-encrypt",
+			"program": "${workspaceFolder}/permutaciones/permutaciones.py",
+			"args": ["-C", "-k1=231", "-k2=21", "-i=plain.txt", "-o=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "permutaciones-decrypt",
+			"program": "${workspaceFolder}/permutaciones/permutaciones.py",
+			"args": ["-D", "-k1=231", "-k2=21", "-i=cyphered.txt"]
+		},	
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "transposiciones-encrypt",
+			"program": "${workspaceFolder}/transposicion/transposicion.py",
+			"args": ["-C", "-p=2 1 0", "-i=plain.txt", "-o=cyphered.txt"]
+		},
+		{
+			"type": "python",
+			"request": "launch",
+			"name": "transposiciones-decrypt",
+			"program": "${workspaceFolder}/transposicion/transposicion.py",
+			"args": ["-D", "-p=2 1 0", "-i=cyphered.txt"]
+		}
+	]
+}
