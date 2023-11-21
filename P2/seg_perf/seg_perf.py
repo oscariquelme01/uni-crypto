@@ -223,7 +223,8 @@ def segPerf():
             print('P(' + x + '|' + y + ') = ' + str(relativeFrequency))
             total += relativeFrequency
 
-
         print(f'Total = {total}\n')
+
+
 if __name__ == "__main__":
     sys.exit(segPerf())
