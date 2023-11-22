@@ -13,10 +13,11 @@ def readInput(args):
     else:
         return ''
 
-def padding(result):
-    if len(result.replace(" ","")) % 64 != 0:
+def paddingTo64(result):
+    if len(result.replace(" ","")) % BLOCK_SIZE != 0:
         result += "0"
-        return padding(result)
+        return paddingTo64(result)
+
     return result
 
 def stringToBinary(string: str):
@@ -38,12 +39,25 @@ def doPermutation(permutation, source):
 
     return ret
 
+def des(plainText, key):
+    # Reduce key into 56 bits and split it into left and right
+    binaryKey = stringToBinary(key)
+    reducedKey = doPermutation(PC_1, binaryKey)
+
+    halvedLength = int(len(reducedKey) / 2)
+
+    leftReducedKey = reducedKey[:halvedLength]
+    rightReducedKey = reducedKey[halvedLength:]
+
+    for i in range(16):
+        pass # ROUND SHIFTS!!!
+
 def desCTR():
     parser = argparse.ArgumentParser()
     parser.add_argument("-C", required=False, action="store_true")
     parser.add_argument("-D", required=False, action="store_true") 
     parser.add_argument("-k", required=True, type=str)
-    parser.add_argument("-ctr", required=True, type=int)
+    parser.add_argument("-ctr", required=True, type=str)
     parser.add_argument("-i", required=False, type=str)
     parser.add_argument("-o", required=False, type=str)
 
@@ -54,17 +68,14 @@ def desCTR():
 
     inputFile = readInput(args).upper()
     outputFile = open(args.o, 'w') if args.o else sys.stdout
-    m = 26
+
     key = args.k.upper()
-    if len(key) * 8 != 64:
-        print('Invalid key: must be 64 bits')
+    if len(key) * 8 != BLOCK_SIZE:
+        print(f'Invalid key: must be {BLOCK_SIZE} bits')
         return
 
-    text = padding(stringToBinary(inputFile))
-
-    binaryKey = stringToBinary(key)
-    reducedKey = doPermutation(PC_1, binaryKey)
-    print(reducedKey)
+    counter = paddingTo64(stringToBinary(args.ctr))
+    cypheredCounter = des(counter, key)
 
 def cifrar():
 
