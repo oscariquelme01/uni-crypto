@@ -21,11 +21,21 @@ def padding(result):
         return padding(result)
     return result
 
-def fromStr_to_binary(string):
-    result = ' '.join(format(ord(c), 'b') for c in string)
-    result += " "
-    result = padding(result)
+def from_Hexa_to_binary(hex):
+    for num in hex:
+        result = bin(int(num,16))
+    #result += " "
+    #result = padding(result)
     return result
+
+def from_Str_to_binary(string):
+    for c in string:
+        aux = c.encode("utf-8").hex()
+        print(format(aux, 'b'))
+        hexa_str += aux
+        hexa_str += " "
+    print(hexa_str)
+    return hexa_str
 
 def desCTR():
     parser = argparse.ArgumentParser()
@@ -46,9 +56,11 @@ def desCTR():
     m = 26
     key = args.k
 
-    inputFileBinary = fromStr_to_binary(inputFile)
+    aux = from_Str_to_binary("ABC")
 
-    print(inputFileBinary)
+    binary_text = from_Hexa_to_binary(aux)
+
+    print(binary_text)
 
 def cifrar():
 
