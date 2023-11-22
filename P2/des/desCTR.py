@@ -2,6 +2,8 @@ import argparse
 import os
 import sys
 from re import error
+from const import *
+from random import randint
 
 def readInput(args):
     if args.i is None:
@@ -22,6 +24,7 @@ def padding(result):
 def stringToBinary(string: str):
     ret = ''
     for c in string:
+        #si queremos meter -65 pra trabajar con A=0
         bits = bin(ord(c)).replace('0b', '')
         for i in range(8 - len(bits)): # 8 is the desired length for out bits so we add padding
             bits = '0' + bits
@@ -47,12 +50,13 @@ def desCTR():
     inputFile = readInput(args).upper()
     outputFile = open(args.o, 'w') if args.o else sys.stdout
     m = 26
-    key = args.k
+    key = args.k.upper()
 
-    aux = stringToBinary("z")
-    print(aux)
-    aux = stringToBinary("1")
-    print(aux)
+    text = padding(stringToBinary(inputFile))
+    print(text)
+
+    key = stringToBinary(key)
+    print(key)
 
 def cifrar():
 
