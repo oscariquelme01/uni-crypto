@@ -1,8 +1,6 @@
 import argparse
 import os
-import gmpy2 as gmp
 import sys
-
 from re import error
 
 def readInput(args):
@@ -21,21 +19,16 @@ def padding(result):
         return padding(result)
     return result
 
-def from_Hexa_to_binary(hex):
-    for num in hex:
-        result = bin(int(num,16))
-    #result += " "
-    #result = padding(result)
-    return result
-
-def from_Str_to_binary(string):
+def stringToBinary(string: str):
+    ret = ''
     for c in string:
-        aux = c.encode("utf-8").hex()
-        print(format(aux, 'b'))
-        hexa_str += aux
-        hexa_str += " "
-    print(hexa_str)
-    return hexa_str
+        bits = bin(ord(c)).replace('0b', '')
+        for i in range(8 - len(bits)): # 8 is the desired length for out bits so we add padding
+            bits = '0' + bits
+        
+        ret += bits
+
+    return ret
 
 def desCTR():
     parser = argparse.ArgumentParser()
@@ -56,11 +49,10 @@ def desCTR():
     m = 26
     key = args.k
 
-    aux = from_Str_to_binary("ABC")
-
-    binary_text = from_Hexa_to_binary(aux)
-
-    print(binary_text)
+    aux = stringToBinary("z")
+    print(aux)
+    aux = stringToBinary("1")
+    print(aux)
 
 def cifrar():
 

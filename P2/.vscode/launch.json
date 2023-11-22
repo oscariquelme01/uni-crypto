@@ -10,6 +10,19 @@
         "-i=miniText.txt",
 		"-o=cyphered.txt"
       ]
+    },
+    {
+      "type": "python",
+      "request": "launch",
+      "name": "desCTR",
+      "program": "${workspaceFolder}/des/desCTR.py",
+      "args": [
+        "-C",
+        "-k=123",
+        "-ctr=123",
+        "-i=input.txt",
+	"-o=output.txt"
+      ]
     }
   ]
 }
