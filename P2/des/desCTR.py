@@ -28,9 +28,7 @@ def stringToBinary(string: str):
     for c in string:
         # si queremos meter -65 pra trabajar con A=0
         bits = bin(ord(c)).replace("0b", "")
-        for i in range(
-            8 - len(bits)
-        ):  # 8 is the desired length for out bits so we add padding
+        for i in range(8 - len(bits)):  # 8 is the desired length for out bits so we add padding
             bits = "0" + bits
 
         ret += bits
@@ -55,7 +53,7 @@ def doPermutation(permutation, source):
 
 def des(ctr, key):
     # Reduce key into 56 bits and split it into left and right
-    binaryKey = stringToBinary(key)
+    binaryKey = key
     reducedKey = doPermutation(PC_1, binaryKey)
 
     halvedLength = int(len(reducedKey) / 2)
