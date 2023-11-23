@@ -89,25 +89,24 @@ def des(ctr, key):
         key_list.append(reducedKey_aux)
 
     # Step 2
-    counter = paddingTo64(stringToBinary(ctr))
-    blocks_text = text_in_blocks(counter)
+    block = paddingTo64(stringToBinary(ctr))
+    result = ""
+  
+    ip = doPermutation(IP, block)
+    leftIp = ip[:32]
+    rightIp = ip[32:]
+    leftIp_list = []
+    rightIp_list = []
+    rightIp_aux = rightIp
+    leftIp_aux = leftIp
+    for i in range(16):
+        leftIp_list.append(rightIp_aux)
+        rightIp_aux = xor(leftIp_aux, function(rightIp_aux,key_list[i]))
+        rightIp_list.append(rightIp_aux)
+        leftIp_aux = rightIp_aux
 
-    for block in blocks_text:
-        ip = doPermutation(IP, block)
-        leftIp = ip[:32]
-        rightIp = ip[32:]
-
-        leftIp_list = []
-        rightIp_list = []
-
-        rightIp_aux = rightIp
-        leftIp_aux = leftIp
-        for i in range(16):
-            leftIp_list.append(rightIp_aux)
-            aux = function(rightIp_aux, key_list[i])
-            # rightIp_aux = leftIp_aux + function(rightIp_aux,key_list[i])
-            leftIp_aux = rightIp_aux
-
+    result = doPermutation(IP_INV,rightIp_list[15] + leftIp_list[15])
+    return result    
 
 def random_key():
     key = ""
@@ -130,18 +129,16 @@ def function(rightIp, key):
     rightIp = doPermutation(E, rightIp)
     xorKeyRightIp = xor(key, rightIp)
 
-    # print("Key: "+key)
-    # print("RightIp: "+rightIp)
-    # print(xorKeyRightIp)
-
     blocks_xor = []
     for i in range(0, len(xorKeyRightIp), 6):
         blocks_xor.append(xorKeyRightIp[i : i + 6])
 
     result = s_function(blocks_xor)
 
+    return result
 
 def s_function(blocks):
+    solution = ""
     for i in range(len(S_BOXES)):
         box = S_BOXES[i]
         block = blocks[i]
@@ -150,10 +147,16 @@ def s_function(blocks):
         row = int(block[0] + block[-1], 2)
         column = int(block[1:5], 2)
 
-        solution = bin(box[row][column])
+        solution += decimalToBinary(box[row][column])
 
-        print(solution)
+    solution = doPermutation(P,solution)
+    return solution
 
+def decimalToBinary(decimal):
+    binary = bin(decimal).replace("0b", "")
+    while len(binary) < 4:
+        binary = "0" + binary
+    return binary
 
 def binaryToDecimal(binary):
     decimal = i = 0
@@ -162,7 +165,7 @@ def binaryToDecimal(binary):
         decimal = decimal + dec * pow(2, i)
         binary = binary // 10
         i += 1
-    print(decimal)
+    return decimal
 
 
 def desCTR():
@@ -195,7 +198,12 @@ def desCTR():
     cypheredCounter = des(ctr, key)
 
     inputText = paddingTo64(stringToBinary(inputFile))
-
+    solution =""
+    inputBlocks = text_in_blocks(inputText)
+    for block in inputBlocks:
+        solution += xor(cypheredCounter,block)
+  
+    print(solution)
 
 def cifrar():
     return 0
