@@ -32,31 +32,126 @@ def stringToBinary(string: str):
 
     return ret
 
+def text_in_blocks(string:str):
+    blocks_input = []
+    for i in range(0,len(string),64):
+        blocks_input.append(string[i:i+64])
+    return blocks_input
+
 def doPermutation(permutation, source):
     ret = ''
     for i in range(len(permutation)):
-        ret += source[permutation[i]]
+        ret += source[permutation[i]-1]
 
     return ret
 
-def des(plainText, key):
+def des(ctr, key):
     # Reduce key into 56 bits and split it into left and right
     binaryKey = stringToBinary(key)
     reducedKey = doPermutation(PC_1, binaryKey)
-
+    
     halvedLength = int(len(reducedKey) / 2)
 
     leftReducedKey = reducedKey[:halvedLength]
     rightReducedKey = reducedKey[halvedLength:]
 
+    leftReducedKeylist = []
+    rightReducedKeylist = []
+
+    leftReducedKey_aux = leftReducedKey
+    rightReducedKey_aux = rightReducedKey
+
+    leftReducedKeylist.append(leftReducedKey_aux)
+    rightReducedKeylist.append(rightReducedKey_aux)
+
     for i in range(16):
-        pass # ROUND SHIFTS!!!
+        shifts = ROUND_SHIFTS[i]
+        for x in range(shifts):
+            aux_left = leftReducedKey_aux[0]
+            aux_right = rightReducedKey_aux[0]
+            leftReducedKey_aux = leftReducedKey_aux[1:] + aux_left
+            rightReducedKey_aux = rightReducedKey_aux[1:] + aux_right
+        leftReducedKeylist.append(leftReducedKey_aux)
+        rightReducedKeylist.append(rightReducedKey_aux)
+
+    key_list = []
+    for i in range(16):
+        aux_key = leftReducedKeylist[i] + rightReducedKeylist[i]
+        reducedKey_aux = doPermutation(PC_2,aux_key)
+        key_list.append(reducedKey_aux)
+
+    #Step 2
+    counter = paddingTo64(stringToBinary(ctr))
+    blocks_text = text_in_blocks(counter)
+
+    for block in blocks_text:
+        ip = doPermutation(IP,block)
+        leftIp = ip[:32]
+        rightIp = ip[32:]
+
+        leftIp_list =[]
+        rightIp_list =[]
+        
+        rightIp_aux = rightIp
+        leftIp_aux  = leftIp
+        for i in range(16):
+            leftIp_list.append(rightIp_aux)
+            aux = function(rightIp_aux,key_list[i])
+            #rightIp_aux = leftIp_aux + function(rightIp_aux,key_list[i])
+            leftIp_aux = rightIp_aux
+
+def random_key():
+    key = ""
+    for i in range(64):
+        key += str(randint(0, 1))    
+    return key
+
+def xor(a, b):
+    solution = ""
+    for i in range(len(a)): 
+        if (a[i] == b[i]): 
+            solution += "0"
+        else: 
+            solution += "1"
+    return solution 
+
+def function(rightIp, key):
+    rightIp = doPermutation(E,rightIp)
+    xorKeyRightIp = xor(key,rightIp)
+
+    #print("Key: "+key)
+    #print("RightIp: "+rightIp)
+    #print(xorKeyRightIp)
+
+    blocks_xor = []
+    for i in range(0,len(xorKeyRightIp),6):
+        blocks_xor.append(xorKeyRightIp[i:i+6])
+
+    result = s_function(blocks_xor)
+
+def s_function(blocks):
+    for block, box in blocks, S_BOXES:
+        row = int(block[0]+block[5],2)
+        column = int(block[1:5],2)
+        
+        solution = bin(box[1][13])
+
+        print(solution)
+
+def binaryToDecimal(binary):
+    decimal, i = 0, 0
+    while(binary != 0):
+        dec = binary % 10
+        decimal = decimal + dec * pow(2, i)
+        binary = binary//10
+        i += 1
+    print(decimal)
 
 def desCTR():
     parser = argparse.ArgumentParser()
     parser.add_argument("-C", required=False, action="store_true")
     parser.add_argument("-D", required=False, action="store_true") 
-    parser.add_argument("-k", required=True, type=str)
+    parser.add_argument("-k", required=False, type=str)
     parser.add_argument("-ctr", required=True, type=str)
     parser.add_argument("-i", required=False, type=str)
     parser.add_argument("-o", required=False, type=str)
@@ -68,14 +163,22 @@ def desCTR():
 
     inputFile = readInput(args).upper()
     outputFile = open(args.o, 'w') if args.o else sys.stdout
+    if args. k:
+        key = args.k
+    else:
+        key = random_key()
 
-    key = args.k.upper()
-    if len(key) * 8 != BLOCK_SIZE:
+    print("Key: "+key)
+    if len(key) != BLOCK_SIZE:
         print(f'Invalid key: must be {BLOCK_SIZE} bits')
         return
 
-    counter = paddingTo64(stringToBinary(args.ctr))
-    cypheredCounter = des(counter, key)
+    ctr = args.ctr
+    cypheredCounter = des(ctr, key)
+
+    inputText = paddingTo64(stringToBinary(inputFile))
+
+    
 
 def cifrar():
 
