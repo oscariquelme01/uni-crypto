@@ -27,8 +27,15 @@ def stringToBinary(string: str):
     ret = ""
     for c in string:
         # si queremos meter -65 pra trabajar con A=0
+<<<<<<< HEAD
         bits = bin(ord(c)).replace("0b", "")
         for i in range(8 - len(bits)):  # 8 is the desired length for out bits so we add padding
+=======
+        bits = bin(ord(c)).replace("0b", "")
+        for i in range(
+            8 - len(bits)
+        ):  # 8 is the desired length for out bits so we add padding
+>>>>>>> af4c848 (Miprimerachamba)
             bits = "0" + bits
 
         ret += bits
@@ -182,6 +189,7 @@ def desCTR():
 
     inputFile = readInput(args).upper()
     outputFile = open(args.o, "w") if args.o else sys.stdout
+    ctr = args.ctr
     if args.k:
         key = args.k
     else:
@@ -192,7 +200,18 @@ def desCTR():
         print(f"Invalid key: must be {BLOCK_SIZE} bits")
         return
 
-    ctr = args.ctr
+
+    if args.C:
+        outputFile.write(cifrar(ctr,key,inputFile))
+    elif args.D :
+        descifrar(ctr,key,inputFile)
+
+    
+    
+  
+   
+
+def cifrar(ctr,key,inputFile):
     cypheredCounter = des(ctr, key)
 
     inputText = paddingTo64(stringToBinary(inputFile))
@@ -200,16 +219,17 @@ def desCTR():
     inputBlocks = text_in_blocks(inputText)
     for block in inputBlocks:
         solution += xor(cypheredCounter,block)
-  
+    
     print(solution)
+    outputText = ""
+    for i in range(0, len(solution), 8):    
+        outputText += chr(int(solution[i:i+8],2))
 
-def cifrar():
+    return outputText
+
+
+def descifrar(ctr,key,inputFile):
     return 0
-
-
-def descifrar():
-    return 0
-
 
 if __name__ == "__main__":
     sys.exit(desCTR())
