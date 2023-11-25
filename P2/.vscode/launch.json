@@ -14,14 +14,29 @@
     {
       "type": "python",
       "request": "launch",
-      "name": "desCTR",
+      "name": "desCTR-encript",
       "program": "${workspaceFolder}/des/desCTR.py",
       "args": [
         "-C",
         "-ctr=123",
+        "-k=0001001100110100010101110111100110011011101111001101111111110001",
         "-i=input.txt",
 	"-o=output.txt"
       ]
+    },
+    {
+      "type": "python",
+      "request": "launch",
+      "name": "desCTR-decript",
+      "program": "${workspaceFolder}/des/desCTR.py",
+      "args": [
+        "-D",
+        "-ctr=123",
+        "-k=0001001100110100010101110111100110011011101111001101111111110001",
+        "-o=input.txt",
+	"-i=output.txt"
+      ]
     }
+
   ]
 }

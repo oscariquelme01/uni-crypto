@@ -128,3 +128,5 @@ S_BOXES = [
 ]
 
 BLOCK_SIZE = 64
+
+NUM_SUBKEYS = 16

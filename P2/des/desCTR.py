@@ -15,27 +15,19 @@ def readInput(args):
         return ""
 
 
-def paddingTo64(result):
-    if len(result.replace(" ", "")) % BLOCK_SIZE != 0:
-        result += "0"
-        return paddingTo64(result)
+def paddingTo64(string):
+    if len(string.replace(" ", "")) % BLOCK_SIZE != 0:
+        string += "0"
+        return paddingTo64(string)
 
-    return result
+    return string
 
 
 def stringToBinary(string: str):
     ret = ""
     for c in string:
-        # si queremos meter -65 pra trabajar con A=0
-<<<<<<< HEAD
         bits = bin(ord(c)).replace("0b", "")
         for i in range(8 - len(bits)):  # 8 is the desired length for out bits so we add padding
-=======
-        bits = bin(ord(c)).replace("0b", "")
-        for i in range(
-            8 - len(bits)
-        ):  # 8 is the desired length for out bits so we add padding
->>>>>>> af4c848 (Miprimerachamba)
             bits = "0" + bits
 
         ret += bits
@@ -43,7 +35,7 @@ def stringToBinary(string: str):
     return ret
 
 
-def text_in_blocks(string: str):
+def textInBlocks(string: str):
     blocks_input = []
     for i in range(0, len(string), 64):
         blocks_input.append(string[i : i + 64])
@@ -57,63 +49,60 @@ def doPermutation(permutation, source):
 
     return ret
 
-
-def des(ctr, key):
+def generateKeys(initialKey):
     # Reduce key into 56 bits and split it into left and right
-    binaryKey = key
-    reducedKey = doPermutation(PC_1, binaryKey)
+    initialBinaryKey = initialKey
+    initialReducedKey = doPermutation(PC_1, initialBinaryKey)
 
-    halvedLength = int(len(reducedKey) / 2)
+    halvedLength = int(len(initialReducedKey) / 2)
 
-    leftReducedKey = reducedKey[:halvedLength]
-    rightReducedKey = reducedKey[halvedLength:]
+    leftReducedKey = initialReducedKey[:halvedLength]
+    rightReducedKey = initialReducedKey[halvedLength:]
 
     leftReducedKeylist = []
     rightReducedKeylist = []
 
-    leftReducedKey_aux = leftReducedKey
-    rightReducedKey_aux = rightReducedKey
+    leftReducedKeylist.append(leftReducedKey)
+    rightReducedKeylist.append(rightReducedKey)
 
-    leftReducedKeylist.append(leftReducedKey_aux)
-    rightReducedKeylist.append(rightReducedKey_aux)
-
-    for i in range(16):
+    for i in range(len(ROUND_SHIFTS)):
         shifts = ROUND_SHIFTS[i]
-        for x in range(shifts):
-            aux_left = leftReducedKey_aux[0]
-            aux_right = rightReducedKey_aux[0]
-            leftReducedKey_aux = leftReducedKey_aux[1:] + aux_left
-            rightReducedKey_aux = rightReducedKey_aux[1:] + aux_right
-        leftReducedKeylist.append(leftReducedKey_aux)
-        rightReducedKeylist.append(rightReducedKey_aux)
+        for _ in range(shifts):
+            leftReducedKey = leftReducedKey[1:] + leftReducedKey[0]
+            rightReducedKey = rightReducedKey[1:] + rightReducedKey[0]
 
-    key_list = []
-    for i in range(16):
-        aux_key = leftReducedKeylist[i] + rightReducedKeylist[i]
-        reducedKey_aux = doPermutation(PC_2, aux_key)
-        key_list.append(reducedKey_aux)
+        leftReducedKeylist.append(leftReducedKey)
+        rightReducedKeylist.append(rightReducedKey)
+
+    keysList = []
+    for i in range(len(leftReducedKeylist)):
+        reducedKey = leftReducedKeylist[i] + rightReducedKeylist[i]
+        reducedKey = doPermutation(PC_2, reducedKey)
+        keysList.append(reducedKey)
+
+    return keysList
+
+def des(ctr, initialKey):
+    # Step 1
+    keys = generateKeys(initialKey)
 
     # Step 2
     block = paddingTo64(stringToBinary(ctr))
-    result = ""
+    result = ''
   
     ip = doPermutation(IP, block)
     leftIp = ip[:32]
     rightIp = ip[32:]
-    leftIp_list = []
-    rightIp_list = []
-    rightIp_aux = rightIp
-    leftIp_aux = leftIp
-    for i in range(16):
-        leftIp_list.append(rightIp_aux)
-        rightIp_aux = xor(leftIp_aux, function(rightIp_aux,key_list[i]))
-        rightIp_list.append(rightIp_aux)
-        leftIp_aux = rightIp_aux
 
-    result = doPermutation(IP_INV,rightIp_list[15] + leftIp_list[15])
+    for i in range(NUM_SUBKEYS):
+        aux = rightIp
+        rightIp = xor(leftIp, function(rightIp, keys[i + 1]))
+        leftIp = aux
+
+    result = doPermutation(IP_INV, rightIp + leftIp)
     return result    
 
-def random_key():
+def randomKey():
     key = ""
     for i in range(64):
         key += str(randint(0, 1))
@@ -127,6 +116,7 @@ def xor(a, b):
             solution += "0"
         else:
             solution += "1"
+
     return solution
 
 
@@ -134,11 +124,11 @@ def function(rightIp, key):
     rightIp = doPermutation(E, rightIp)
     xorKeyRightIp = xor(key, rightIp)
 
-    blocks_xor = []
+    blocksXOR = []
     for i in range(0, len(xorKeyRightIp), 6):
-        blocks_xor.append(xorKeyRightIp[i : i + 6])
+        blocksXOR.append(xorKeyRightIp[i : i + 6])
 
-    result = s_function(blocks_xor)
+    result = s_function(blocksXOR)
 
     return result
 
@@ -193,43 +183,52 @@ def desCTR():
     if args.k:
         key = args.k
     else:
-        key = random_key()
+        key = randomKey()
 
     print("Key: " + key)
     if len(key) != BLOCK_SIZE:
         print(f"Invalid key: must be {BLOCK_SIZE} bits")
         return
 
-
     if args.C:
-        outputFile.write(cifrar(ctr,key,inputFile))
+        outputFile.write(encrypt(ctr,key,inputFile))
     elif args.D :
-        descifrar(ctr,key,inputFile)
-
-    
-    
-  
+        outputFile.write(decrypt(ctr,key,inputFile))
    
 
-def cifrar(ctr,key,inputFile):
+def encrypt(ctr,key,inputFile):
     cypheredCounter = des(ctr, key)
 
     inputText = paddingTo64(stringToBinary(inputFile))
     solution =""
-    inputBlocks = text_in_blocks(inputText)
+    inputBlocks = textInBlocks(inputText)
     for block in inputBlocks:
         solution += xor(cypheredCounter,block)
     
-    print(solution)
     outputText = ""
     for i in range(0, len(solution), 8):    
-        outputText += chr(int(solution[i:i+8],2))
+        outputText += hex(int(solution[i:i+8],2))
 
+    print('cyphered text: ', outputText)
     return outputText
 
 
-def descifrar(ctr,key,inputFile):
-    return 0
+def decrypt(ctr,key,inputFile):
+    decipheredCounter = des(ctr, key)
+
+    inputText = paddingTo64(stringToBinary(inputFile))
+    solution = ""
+    inputBlocks = textInBlocks(inputText)
+    for block in inputBlocks:
+        solution += xor(decipheredCounter, block)
+
+    outputText = ""
+    for i in range(0, len(solution), 8):
+        outputText += chr(int(solution[i:i+8], 2))
+
+    print('deciphered text: ', outputText)
+
+    return outputText
 
 if __name__ == "__main__":
     sys.exit(desCTR())
