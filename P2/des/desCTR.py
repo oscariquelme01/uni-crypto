@@ -34,6 +34,12 @@ def stringToBinary(string: str):
 
     return ret
 
+def hexToBinary(hexString: str):
+    binaryRepresentation = bin(int(hexString, 16))[2:]
+    while len(binaryRepresentation) % 4 != 0:
+        binaryRepresentation = '0' + binaryRepresentation
+    return binaryRepresentation
+
 
 def textInBlocks(string: str):
     blocks_input = []
@@ -83,8 +89,10 @@ def generateKeys(initialKey):
     return keysList
 
 def des(ctr, initialKey):
+    initialKey = '0001001100110100010101110111100110011011101111001101111111110001'
     # Step 1
     keys = generateKeys(initialKey)
+
 
     # Step 2
     block = paddingTo64(stringToBinary(ctr))
@@ -185,7 +193,7 @@ def desCTR():
     else:
         key = randomKey()
 
-    print("Key: " + key)
+    # print("Key: " + key)
     if len(key) != BLOCK_SIZE:
         print(f"Invalid key: must be {BLOCK_SIZE} bits")
         return
@@ -199,15 +207,22 @@ def desCTR():
 def encrypt(ctr,key,inputFile):
     cypheredCounter = des(ctr, key)
 
-    inputText = paddingTo64(stringToBinary(inputFile))
+    binaryInput = stringToBinary(inputFile)
+    paddingLength = BLOCK_SIZE - ( len(binaryInput) % BLOCK_SIZE)
+    inputText = paddingTo64(binaryInput)
     solution =""
     inputBlocks = textInBlocks(inputText)
     for block in inputBlocks:
         solution += xor(cypheredCounter,block)
     
     outputText = ""
-    for i in range(0, len(solution), 8):    
-        outputText += hex(int(solution[i:i+8],2))
+    for i in range(0, len(solution) - paddingLength, 8):    
+        chunk = solution[i:i+8]
+        character = hex(int(solution[i:i+8],2))[2:]
+        if len(character) == 1:
+            character = '0' + character
+
+        outputText += character
 
     print('cyphered text: ', outputText)
     return outputText
@@ -216,14 +231,16 @@ def encrypt(ctr,key,inputFile):
 def decrypt(ctr,key,inputFile):
     decipheredCounter = des(ctr, key)
 
-    inputText = paddingTo64(stringToBinary(inputFile))
+    binaryInput = hexToBinary(inputFile)
+    paddingLength = BLOCK_SIZE - ( len(binaryInput) % BLOCK_SIZE)
+    inputText = paddingTo64(binaryInput)
     solution = ""
     inputBlocks = textInBlocks(inputText)
     for block in inputBlocks:
         solution += xor(decipheredCounter, block)
 
     outputText = ""
-    for i in range(0, len(solution), 8):
+    for i in range(0, len(solution) - paddingLength, 8):
         outputText += chr(int(solution[i:i+8], 2))
 
     print('deciphered text: ', outputText)
