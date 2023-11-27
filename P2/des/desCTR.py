@@ -99,7 +99,7 @@ def des(ctr, initialKey):
     keys = generateKeys(initialKey)
 
     # Step 2
-    block = paddingTo64(stringToBinary(ctr))
+    block = paddingTo64(stringToBinary(str(ctr)))
     result = ""
 
     ip = doPermutation(IP, block)
