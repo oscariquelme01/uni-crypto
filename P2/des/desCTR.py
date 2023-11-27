@@ -152,7 +152,7 @@ def s_function(blocks):
         box = S_BOXES[i]
         block = blocks[i]
 
-        # grab first and last element to index row
+        # grab first and last element to index row, then use the rest of the bites to index column
         row = int(block[0] + block[-1], 2)
         column = int(block[1:5], 2)
 
