@@ -27,17 +27,20 @@ def stringToBinary(string: str):
     ret = ""
     for c in string:
         bits = bin(ord(c)).replace("0b", "")
-        for i in range(8 - len(bits)):  # 8 is the desired length for out bits so we add padding
+        for i in range(
+            8 - len(bits)
+        ):  # 8 is the desired length for out bits so we add padding
             bits = "0" + bits
 
         ret += bits
 
     return ret
 
+
 def hexToBinary(hexString: str):
     binaryRepresentation = bin(int(hexString, 16))[2:]
     while len(binaryRepresentation) % 4 != 0:
-        binaryRepresentation = '0' + binaryRepresentation
+        binaryRepresentation = "0" + binaryRepresentation
     return binaryRepresentation
 
 
@@ -54,6 +57,7 @@ def doPermutation(permutation, source):
         ret += source[permutation[i] - 1]
 
     return ret
+
 
 def generateKeys(initialKey):
     # Reduce key into 56 bits and split it into left and right
@@ -88,16 +92,16 @@ def generateKeys(initialKey):
 
     return keysList
 
+
 def des(ctr, initialKey):
-    initialKey = '0001001100110100010101110111100110011011101111001101111111110001'
+    initialKey = "0001001100110100010101110111100110011011101111001101111111110001"
     # Step 1
     keys = generateKeys(initialKey)
 
-
     # Step 2
     block = paddingTo64(stringToBinary(ctr))
-    result = ''
-  
+    result = ""
+
     ip = doPermutation(IP, block)
     leftIp = ip[:32]
     rightIp = ip[32:]
@@ -108,7 +112,8 @@ def des(ctr, initialKey):
         leftIp = aux
 
     result = doPermutation(IP_INV, rightIp + leftIp)
-    return result    
+    return result
+
 
 def randomKey():
     key = ""
@@ -140,6 +145,7 @@ def function(rightIp, key):
 
     return result
 
+
 def s_function(blocks):
     solution = ""
     for i in range(len(S_BOXES)):
@@ -152,14 +158,16 @@ def s_function(blocks):
 
         solution += decimalToBinary(box[row][column])
 
-    solution = doPermutation(P,solution)
+    solution = doPermutation(P, solution)
     return solution
+
 
 def decimalToBinary(decimal):
     binary = bin(decimal).replace("0b", "")
     while len(binary) < 4:
         binary = "0" + binary
     return binary
+
 
 def binaryToDecimal(binary):
     decimal = i = 0
@@ -176,7 +184,7 @@ def desCTR():
     parser.add_argument("-C", required=False, action="store_true")
     parser.add_argument("-D", required=False, action="store_true")
     parser.add_argument("-k", required=False, type=str)
-    parser.add_argument("-ctr", required=True, type=str)
+    parser.add_argument("-ctr", required=True, type=int)
     parser.add_argument("-i", required=False, type=str)
     parser.add_argument("-o", required=False, type=str)
 
@@ -187,7 +195,7 @@ def desCTR():
 
     inputFile = readInput(args).upper()
     outputFile = open(args.o, "w") if args.o else sys.stdout
-    ctr = args.ctr
+    ctr = int(args.ctr)
     if args.k:
         key = args.k
     else:
@@ -199,53 +207,58 @@ def desCTR():
         return
 
     if args.C:
-        outputFile.write(encrypt(ctr,key,inputFile))
-    elif args.D :
-        outputFile.write(decrypt(ctr,key,inputFile))
-   
+        outputFile.write(encrypt(ctr, key, inputFile))
+    elif args.D:
+        outputFile.write(decrypt(ctr, key, inputFile))
 
-def encrypt(ctr,key,inputFile):
-    cypheredCounter = des(ctr, key)
+
+def encrypt(counter, key, inputFile):
+    solution = ""
 
     binaryInput = stringToBinary(inputFile)
-    paddingLength = BLOCK_SIZE - ( len(binaryInput) % BLOCK_SIZE)
+    paddingLength = BLOCK_SIZE - (len(binaryInput) % BLOCK_SIZE)
     inputText = paddingTo64(binaryInput)
-    solution =""
     inputBlocks = textInBlocks(inputText)
     for block in inputBlocks:
-        solution += xor(cypheredCounter,block)
-    
-    outputText = ""
-    for i in range(0, len(solution) - paddingLength, 8):    
-        chunk = solution[i:i+8]
-        character = hex(int(solution[i:i+8],2))[2:]
-        if len(character) == 1:
-            character = '0' + character
+        cypheredCounter = des(counter, key)
+        solution += xor(cypheredCounter, block)
 
-        outputText += character
-
-    print('cyphered text: ', outputText)
-    return outputText
-
-
-def decrypt(ctr,key,inputFile):
-    decipheredCounter = des(ctr, key)
-
-    binaryInput = hexToBinary(inputFile)
-    paddingLength = BLOCK_SIZE - ( len(binaryInput) % BLOCK_SIZE)
-    inputText = paddingTo64(binaryInput)
-    solution = ""
-    inputBlocks = textInBlocks(inputText)
-    for block in inputBlocks:
-        solution += xor(decipheredCounter, block)
+        counter += 1
 
     outputText = ""
     for i in range(0, len(solution) - paddingLength, 8):
-        outputText += chr(int(solution[i:i+8], 2))
+        chunk = solution[i : i + 8]
+        character = hex(int(solution[i : i + 8], 2))[2:]
+        if len(character) == 1:
+            character = "0" + character
 
-    print('deciphered text: ', outputText)
+        outputText += character
+
+    print("cyphered text: ", outputText)
+    return outputText
+
+
+def decrypt(counter, key, inputFile):
+    solution = ""
+
+    binaryInput = hexToBinary(inputFile)
+    paddingLength = BLOCK_SIZE - (len(binaryInput) % BLOCK_SIZE)
+    inputText = paddingTo64(binaryInput)
+    inputBlocks = textInBlocks(inputText)
+    for block in inputBlocks:
+        decipheredCounter = des(counter, key)
+        solution += xor(decipheredCounter, block)
+
+        counter += 1
+
+    outputText = ""
+    for i in range(0, len(solution) - paddingLength, 8):
+        outputText += chr(int(solution[i : i + 8], 2))
+
+    print("deciphered text: ", outputText)
 
     return outputText
+
 
 if __name__ == "__main__":
     sys.exit(desCTR())
