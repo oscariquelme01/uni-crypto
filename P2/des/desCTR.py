@@ -93,13 +93,12 @@ def generateKeys(initialKey):
     return keysList
 
 
-def des(ctr, initialKey):
-    initialKey = "0001001100110100010101110111100110011011101111001101111111110001"
+def des(block, initialKey):
     # Step 1
     keys = generateKeys(initialKey)
 
     # Step 2
-    block = paddingTo64(stringToBinary(str(ctr)))
+    block = paddingTo64(stringToBinary(str(block)))
     result = ""
 
     ip = doPermutation(IP, block)
