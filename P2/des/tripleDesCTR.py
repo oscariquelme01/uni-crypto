@@ -94,7 +94,6 @@ def generateKeys(initialKey):
 
 
 def des(ctr, initialKey):
-    initialKey = "0001001100110100010101110111100110011011101111001101111111110001"
     # Step 1
     keys = generateKeys(initialKey)
 

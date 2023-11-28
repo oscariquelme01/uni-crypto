@@ -45,7 +45,7 @@ def sBoxOperation(sBox, binaryInput):
 def main():
     data = []
 
-    for i in range(1000000):
+    for i in range(1000):
         input = generate48BitInputFromNumber(i)
         output = sBoxOperation(S_BOXES[1], input)
 
