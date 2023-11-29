@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 
-def aes_sbox_substitution(input_byte):
+def aesSboxSubstitutiion(inputByte):
     # The AES S-box substitution table
-    s_box = (
+    S_BOX = (
         0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5,
         0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
         0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0,
@@ -37,25 +37,25 @@ def aes_sbox_substitution(input_byte):
         0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16
     )
 
-    output_byte = s_box[input_byte]
-    return output_byte
+    outputByte = S_BOX[inputByte]
+    return outputByte
 
-def plot_aes_sbox():
-    input_values = list(range(256))
-    output_values = []
+def plotAesSbox():
+    inputValues = list(range(256))
+    outputValues = []
 
-    for input_val in input_values:
-        output_byte = aes_sbox_substitution(input_val)
-        output_values.append(output_byte)
+    for inputVal in inputValues:
+        outputByte = aesSboxSubstitutiion(inputVal)
+        outputValues.append(outputByte)
 
     # Plotting
-    print(input_values)
-    print(output_values)
-    plt.plot(input_values, output_values)
+    print(inputValues)
+    print(outputValues)
+    plt.plot(inputValues, outputValues)
     plt.title('AES S-box Non-Linearity Study')
     plt.xlabel('Input Byte Value')
     plt.ylabel('Output Byte Value')
     plt.show()
 
 if __name__ == "__main__":
-    plot_aes_sbox()
+    plotAesSbox()
