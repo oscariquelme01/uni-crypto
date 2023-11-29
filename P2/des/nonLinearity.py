@@ -45,9 +45,14 @@ def sBoxOperation(sBox, binaryInput):
 def main():
     data = []
 
+    index = int(input('Introduce el indice de la S-Box a probar (0-7): '))
+    if index < 0 or index > 7:
+        print('Input invalido')
+        return
+
     for i in range(1000):
-        input = generate48BitInputFromNumber(i)
-        output = sBoxOperation(S_BOXES[1], input)
+        inputBits = generate48BitInputFromNumber(i)
+        output = sBoxOperation(S_BOXES[index], inputBits)
 
         data.append(output)
 
@@ -55,7 +60,7 @@ def main():
 
     plt.xlabel('decimal input')
     plt.ylabel('decimal output')
-    plt.title('Non-linearity of S-boxes in des')
+    plt.title(f'Non-linearity of S-box {index} in des')
 
     plt.show()
 
