@@ -116,7 +116,7 @@ def des(ctr, initialKey):
 
 def randomKey():
     key = ""
-    for i in range(64):
+    for i in range(64 * 3):
         key += str(randint(0, 1))
     return key
 
@@ -182,8 +182,7 @@ def desCTR():
     parser = argparse.ArgumentParser()
     parser.add_argument("-C", required=False, action="store_true")
     parser.add_argument("-D", required=False, action="store_true")
-    parser.add_argument("-k1", required=False, type=str)
-    parser.add_argument("-k2", required=False, type=str)
+    parser.add_argument("-k", required=False, type=str)
     parser.add_argument("-ctr", required=True, type=int)
     parser.add_argument("-i", required=False, type=str)
     parser.add_argument("-o", required=False, type=str)
@@ -196,33 +195,29 @@ def desCTR():
     inputFile = readInput(args).upper()
     outputFile = open(args.o, "w") if args.o else sys.stdout
     ctr = int(args.ctr)
-    if args.k1:
-        key1 = args.k1
+    if args.k:
+        key = args.k
     else:
-        key1 = randomKey()
+        key = randomKey()
 
-    if args.k2:
-        key2 = args.k2
-    else:
-        key2 = randomKey()
+    key = '111111101011100110101111011110000001011111001011010111010010010000010100110100100010110010011101110001100100001010001001110100000110100110001001111010000011001101010001101000100100110100000011'
+    print("Key: " + key)
 
-    print("First key: " + key1)
-    print("Second key: " + key2)
-
-    if len(key1) != BLOCK_SIZE:
+    if len(key) != BLOCK_SIZE * 3:
         print(f"Invalid first key: must be {BLOCK_SIZE} bits")
         return
-    if len(key2) != BLOCK_SIZE:
-        print(f"Invalid second key: must be {BLOCK_SIZE} bits")
-        return
+
+    firstKey = key[:64]
+    secondKey = key[64:128]
+    thirdKey = key[128:]
 
     if args.C:
-        outputFile.write(encrypt(ctr, key1, key2, inputFile))
+        outputFile.write(encrypt(ctr, firstKey, secondKey, thirdKey, inputFile))
     elif args.D:
-        outputFile.write(decrypt(ctr, key1, key2, inputFile))
+        outputFile.write(decrypt(ctr, firstKey, secondKey, thirdKey, inputFile))
 
 
-def encrypt(counter, firstKey, secondKey, inputFile):
+def encrypt(counter, firstKey, secondKey, thirdKey, inputFile):
     solution = ""
 
     binaryInput = stringToBinary(inputFile)
@@ -232,7 +227,7 @@ def encrypt(counter, firstKey, secondKey, inputFile):
     for block in inputBlocks:
         firstCypheredCounter = des(counter, firstKey)
         secondCypheredCounter = des(firstCypheredCounter, secondKey)
-        finalCypheredCounter = des(secondCypheredCounter, firstKey)
+        finalCypheredCounter = des(secondCypheredCounter, thirdKey)
         solution += xor(finalCypheredCounter, block)
 
         counter += 1
@@ -246,11 +241,10 @@ def encrypt(counter, firstKey, secondKey, inputFile):
 
         outputText += character
 
-    print("cyphered text: ", outputText)
     return outputText
 
 
-def decrypt(counter, firstKey, secondKey, inputFile):
+def decrypt(counter, firstKey, secondKey, thirdKey, inputFile):
     solution = ""
 
     binaryInput = hexToBinary(inputFile)
@@ -260,7 +254,7 @@ def decrypt(counter, firstKey, secondKey, inputFile):
     for block in inputBlocks:
         firstDecypheredCounter = des(counter, firstKey)
         secondDecypheredCounter = des(firstDecypheredCounter, secondKey)
-        finalDecypheredCounter = des(secondDecypheredCounter, firstKey)
+        finalDecypheredCounter = des(secondDecypheredCounter, thirdKey)
         solution += xor(finalDecypheredCounter, block)
 
         counter += 1
