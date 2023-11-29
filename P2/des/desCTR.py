@@ -200,7 +200,7 @@ def desCTR():
     else:
         key = randomKey()
 
-    # print("Key: " + key)
+    print("Key: " + key)
     if len(key) != BLOCK_SIZE:
         print(f"Invalid key: must be {BLOCK_SIZE} bits")
         return
