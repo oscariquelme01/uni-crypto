@@ -51,7 +51,7 @@ def plot_aes_sbox():
     # Plotting
     print(input_values)
     print(output_values)
-    plt.plot(input_values, output_values, marker='.', linestyle='None')
+    plt.plot(input_values, output_values)
     plt.title('AES S-box Non-Linearity Study')
     plt.xlabel('Input Byte Value')
     plt.ylabel('Output Byte Value')
