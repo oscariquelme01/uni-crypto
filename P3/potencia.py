@@ -21,20 +21,20 @@ def exp_normal(base, exponente, modulo):
 
 def exp_gmp(base , exponente, modulo):
     resultado = gmp.mpz(1)
-    resultado = gmp.mpz(pow(base,exponente,modulo))
+    resultado = gmp.powmod(base,exponente,modulo)
     return resultado
 
 
 def tiempo_gmp(base,exponente,modulo):
     inicio = time.time()
     solucion = exp_gmp(base,exponente,modulo)
-    print(time.time() - inicio)
+    print("Tiempo GMP: "+str(time.time() - inicio))
     return solucion
     
 def tiempo_normal(base,exponente,modulo):
     inicio = time.time()
     solucion = exp_normal(base,exponente,modulo)
-    print(time.time() - inicio)
+    print("Tiempo Normal: "+str(time.time() - inicio))
     return solucion
 
 def potencia():
@@ -52,8 +52,8 @@ def potencia():
     solucion1 = gmp.mpz(tiempo_gmp(base,exponente,modulo))
     solucion2 = gmp.mpz(tiempo_normal(base,exponente,modulo))
 
-    print("Solucion 1: "+str(solucion1))
-    print("Solucion 2: "+str(solucion2))
+    print("Solucion GMP: "+str(solucion1))
+    print("Solucion Normal: "+str(solucion2))
 
 if __name__ == "__main__":
     sys.exit(potencia())
