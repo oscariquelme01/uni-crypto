@@ -38,7 +38,6 @@ def tiempo_normal(base,exponente,modulo):
     return solucion
 
 def potencia():
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-b", required=True, type=checkPositive)
     parser.add_argument("-exp", required=True, type=checkPositive)
