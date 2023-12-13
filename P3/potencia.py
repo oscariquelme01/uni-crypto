@@ -3,12 +3,6 @@ import argparse
 import sys
 import time
 
-def checkPositive(value):
-    if int(value) <= 0:
-        raise argparse.ArgumentTypeError("%s is not a positive integer" % value)
-
-    return int(value)
-
 def exp_normal(base, exponente, modulo):
     resultado = gmp.mpz(1)
 
@@ -20,7 +14,6 @@ def exp_normal(base, exponente, modulo):
     return resultado
 
 def exp_gmp(base , exponente, modulo):
-    resultado = gmp.mpz(1)
     resultado = gmp.powmod(base,exponente,modulo)
     return resultado
 
@@ -39,9 +32,9 @@ def tiempo_normal(base,exponente,modulo):
 
 def potencia():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-b", required=True, type=checkPositive)
-    parser.add_argument("-exp", required=True, type=checkPositive)
-    parser.add_argument("-m", required=True, type=checkPositive)
+    parser.add_argument("-b", required=True, type=int)
+    parser.add_argument("-exp", required=True, type=int)
+    parser.add_argument("-m", required=True, type=int)
     args = parser.parse_args()
 
     base = gmp.mpz(int(args.b))
