@@ -1,8 +1,8 @@
 import gmpy2 as gmp
 import argparse
-import sys
 import time
 import random
+import sys
 
 def checkPositive(value):
     if int(value) <= 0: raise argparse.ArgumentTypeError("%s is not a positive integer" % value)
@@ -76,26 +76,34 @@ def main():
     minimumAccuracy = args.p
     iterations = getIterations(minimumAccuracy)
 
+    outputFile = open(args.o, 'w') if args.o else sys.stdout
+
     if not iterations:
         print('Wrong -p argument, must be a float number between 1 and 0')
         return
 
-    # Generate random number with the specified significant bits
-    significantBits = int(args.b)
-    candidate = randomInteger(significantBits)
-    print(f'Candidate number: {candidate}')
+    primeFound = False
+    initialTime = time.time()
+    while not primeFound:
+        # Generate random number with the specified significant bits
+        significantBits = int(args.b)
+        candidate = randomInteger(significantBits)
 
-    isPrime = millerRabin(candidate, iterations)
-    print(f'Number is {"prime" if isPrime else "composite"}')
-    if isPrime:
-        print(f'Prime accuracy: {1 - 4 ** (-iterations)} (Iterations: {iterations})')
+        isPrime = millerRabin(candidate, iterations)
 
-    gmpIsPrime = gmp.mpz(candidate).is_prime()
-    print(f'According to gmp, number is {"prime" if gmpIsPrime else "composite"}')
+        if isPrime:
+            finalTime = time.time()
+            outputFile.write(f'Candidate number: {candidate}')
+            outputFile.write(f'Number is prime')
+            outputFile.write(f'Prime accuracy: {1 - 4 ** (-iterations)} (Iterations: {iterations})')
 
-    outputFile = open(args.o, 'w') if args.o else sys.stdout
+            gmpIsPrime = gmp.mpz(candidate).is_prime()
+            outputFile.write(f'According to gmp, number is {"prime" if gmpIsPrime else "composite"}')
+            outputFile.write(f'Time taken to find the candidate number: {finalTime - initialTime} ')
+            primeFound = True
 
-    return 
+
+
 
 if __name__ == "__main__":
     main()
